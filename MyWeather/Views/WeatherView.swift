@@ -12,7 +12,7 @@ struct WeatherView: View {
     let city: String
     
     var body: some View {
-        Text("Weather for \(city) is \(weather.temp)")
+        Text("Weather for \(city) is \(weather.fahrenheit)")
     }
 }
 

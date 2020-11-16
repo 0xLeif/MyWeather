@@ -48,7 +48,6 @@ class WeatherViewModel: ObservableObject {
                     self.loadingState = .failed
                 }
             }, receiveValue: {(data) in
-                
                 self.weather = data .main
                
                 print(data)

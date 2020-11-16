@@ -14,8 +14,8 @@ struct ContentView: View {
     
     var body: some View {
         VStack{
-            TextField("Enter a city", text: self.$city, onEditingChanged:{ _ in }, onCommit: {
-                self.weatherVM.loadWeather(city: self.city)
+            TextField("Enter a city", text: $city, onEditingChanged:{ _ in }, onCommit: {
+                weatherVM.loadWeather(city: city)
             }).textFieldStyle(RoundedBorderTextFieldStyle())
             
             Spacer()
@@ -35,9 +35,9 @@ struct ContentView: View {
     
     var loadingLabelView: some View {
         Group {
-            if self.weatherVM.loadingState == .loading {
+            if weatherVM.loadingState == .loading {
                 Text("Loading...")
-            } else {
+            } else if weatherVM.loadingState == .failed {
                 Text("Could not load weather")
             }
         }
