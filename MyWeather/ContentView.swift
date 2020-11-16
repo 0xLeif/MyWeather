@@ -8,7 +8,6 @@
 import SwiftUI
 import Combine
 
-
 struct ContentView: View {
     @ObservedObject private var weatherVM = WeatherViewModel()
     @State private var city: String = ""
@@ -18,24 +17,31 @@ struct ContentView: View {
             TextField("Enter a city", text: self.$city, onEditingChanged:{ _ in }, onCommit: {
                 self.weatherVM.loadWeather(city: self.city)
             }).textFieldStyle(RoundedBorderTextFieldStyle())
-    
-                
+            
             Spacer()
+            
+            weatherInfoView
+        }
+        .padding()
+    }
+    
+    var weatherInfoView: some View {
+        guard let weather = weatherVM.weather else {
+            return AnyView(loadingLabelView)
+        }
+        
+        return AnyView(WeatherView(weather: weather, city: city))
+    }
+    
+    var loadingLabelView: some View {
+        Group {
             if self.weatherVM.loadingState == .loading {
                 Text("Loading...")
-            }
-            else if self.weatherVM.loadingState == .success{
-                WeatherView(temp: self.weatherVM.temp, city: self.city)
-                    
-            } else if self.weatherVM.loadingState == .failed {
+            } else {
                 Text("Could not load weather")
             }
-            
-        }.padding()
-        
-            }
-    
-    
+        }
+    }
 }
 
 struct ContentView_Previews: PreviewProvider {
@@ -43,13 +49,3 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
-
-struct WeatherView: View {
-    let temp: Int
-    let city: String
-    
-    var body: some View {
-        Text("Weather for \(city) is \(temp)")
-    }
-}
-

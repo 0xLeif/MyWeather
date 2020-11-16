@@ -16,34 +16,30 @@ enum LoadingState {
 }
 
 class WeatherViewModel: ObservableObject {
-    
-    var bag = [AnyCancellable]()
-    let weatherProvider = WeatherServices(apiClient: ApiClient())
-    @Published private var weather: WeatherResponse?
-    @Published var loadingState: LoadingState = .none
-   
-    var temp: Int {
-        guard let temp = weather?.main.temp else {
-            return 0
-        }
-        
-        return Int((temp * 9/5) - 459.67)
+    deinit {
+        task?.cancel()
     }
+    
+    private var task: AnyCancellable?
+    let weatherProvider = WeatherServices()
+
+    @Published var weather: Weather?
+    @Published var loadingState: LoadingState = .none
     
     func loadWeather(city: String) {
         
-        guard let city = city.escaped() else {
+        guard let city = city.escaped else {
             print("Bad city")
             return
         }
-        guard let url = URL.urlForWeather(city) else {
+        guard let url = URL(weatherForCity: city) else {
             print("Bad URL")
             return 
         }
         
         loadingState = .loading
  
-        weatherProvider.weather(url)
+        task = weatherProvider.weather(url)
             .sink(receiveCompletion: { completion in
                 switch completion {
                 case .finished:
@@ -53,9 +49,9 @@ class WeatherViewModel: ObservableObject {
                 }
             }, receiveValue: {(data) in
                 
-                self.weather = data 
+                self.weather = data .main
                
                 print(data)
-        }).store(in: &bag)
+        })
     }
 }

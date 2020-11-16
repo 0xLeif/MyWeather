@@ -18,3 +18,9 @@ struct Weather: Codable {
     let temp_min: Double
     let temp_max: Double
 }
+
+extension Weather {
+    var fahrenheit: Int {
+        Int((temp * 9/5) - 459.67)
+    }
+}
